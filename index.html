@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор отчетов на повышение</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- ===== ШАПКА ===== -->
+        <div class="header">
+            <div class="header-left">
+                <h1>
+                    📋 Генератор отчётов
+                    <small>Created by</small>
+                </h1>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                    🌙 <span>Тёмная</span>
+                </button>
+            </div>
+        </div>
+        <div class="sub">Автоматическое формирование ходатайства о присвоении очередного воинского звания</div>
+
+        <!-- ===== ОСНОВНАЯ СЕТКА ===== -->
+        <div class="grid-2">
+            <!-- ЛЕВАЯ ПАНЕЛЬ: выбор звания -->
+            <div class="selector-panel">
+                <label for="departmentSelect">📍 Подразделение</label>
+                <select id="departmentSelect">
+                    <!-- Заполняется из data.js -->
+                </select>
+
+                <label for="rankFromSelect">🔹 Текущее звание</label>
+                <select id="rankFromSelect"></select>
+
+                <div class="rank-auto-hint">
+                    <span class="auto-badge">➡️ Авто</span>
+                    <span>Желаемое звание: <strong id="rankToAuto">Старший Сержант</strong></span>
+                </div>
+
+                <div class="requirements-box">
+                    <h3>📌 Требования для повышения</h3>
+                    <div id="requirementsList">
+                        <div class="req-item" style="color: var(--text-muted);">Выберите звание</div>
+                    </div>
+                </div>
+                <div class="hint">
+                    <span class="inline-code">⚡</span> После выбора звания заполните ссылки справа
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ ПАНЕЛЬ: форма для ссылок -->
+            <div class="form-panel">
+                <div class="form-header">
+                    <h2>🔗 Введите данные</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-outline" id="clearBtn">🗑️ Очистить</button>
+                    </div>
+                </div>
+
+                <!-- Поле для ФИО -->
+                <div class="form-group">
+                    <label for="fullName">👤 ФИО сотрудника</label>
+                    <input class="input-field" id="fullName" type="text" placeholder="Иванов Иван Иванович" />
+                    <div style="margin-top: 4px; font-size: 13px; color: var(--text-muted);">
+                        Будет автоматически подставлено в текст: <strong id="rankPreview">Сержант</strong>
+                    </div>
+                </div>
+
+                <!-- Поле для профиля -->
+                <div class="form-group">
+                    <label for="profileLink">🔗 Ссылка на профиль</label>
+                    <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
+                </div>
+
+                <!-- Динамические поля для требований -->
+                <div id="requirementsFields">
+                    <div style="color: var(--text-muted); font-size: 14px; padding: 12px 0;">
+                        Выберите звание, чтобы увидеть поля
+                    </div>
+                </div>
+
+                <!-- Кнопка генерации -->
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="generateBtn" style="width: 100%; justify-content: center; padding: 14px;">
+                        🚀 Сгенерировать отчет
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ВЫВОД ОТЧЕТА ===== -->
+        <div class="report-output" id="reportOutput">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <h3 style="color: var(--text-primary);">📄 Сгенерированный отчет</h3>
+                <button class="btn btn-success" id="copyReportBtn">📋 Копировать</button>
+            </div>
+            <div class="report-body" id="reportBody"></div>
+            <div class="report-footer">
+                <span>✅ Отчет готов к отправке</span>
+                <span style="font-size: 12px;">Проверьте все ссылки перед копированием</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast">✅ Отчет скопирован</div>
+
+    <!-- ===== ПОДКЛЮЧЕНИЕ JS ===== -->
+    <script src="js/data.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
