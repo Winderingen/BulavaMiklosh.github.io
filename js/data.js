@@ -465,8 +465,4 @@ function getConstantsForDepartment(depKey) {
     if (DEPARTMENT_CONSTANTS[depKey]) {
         return DEPARTMENT_CONSTANTS[depKey];
     }
-    
-    // Если отдел не найден - возвращаем константы ОБО как fallback
-    console.warn(`⚠️ Отдел "${depKey}" не найден в DEPARTMENT_CONSTANTS, используются константы ОБО`);
-    return DEPARTMENT_CONSTANTS.OBO;
 }
