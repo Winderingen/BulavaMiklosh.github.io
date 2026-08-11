@@ -190,6 +190,8 @@ function generateReport() {
     const fullName = state.links['fullName'] || '[ФИО НЕ УКАЗАНО]';
     const profileLink = state.links['profile'] || '[ССЫЛКА НА ПРОФИЛЬ НЕ УКАЗАНА]';
 
+    const constants = getConstantsForDepartment(state.department);
+    
     // Собираем требования со ссылками (поддерживаем многострочный ввод)
     let reqLines = [];
     path.requirements.forEach((req, idx) => {
