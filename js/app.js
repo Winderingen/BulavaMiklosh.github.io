@@ -189,8 +189,6 @@ function generateReport() {
     const depName = getDepartmentShortName(state.department);
     const fullName = state.links['fullName'] || '[ФИО НЕ УКАЗАНО]';
     const profileLink = state.links['profile'] || '[ССЫЛКА НА ПРОФИЛЬ НЕ УКАЗАНА]';
-    
-    const constants = getConstantsForDepartment(state.department);
 
     // Собираем требования со ссылками (поддерживаем многострочный ввод)
     let reqLines = [];
