@@ -105,6 +105,7 @@ const RANKS_DB = {
                     'Организовать финансовую поставку – 7 раз, 5 из которых должны быть доставлены',
                     'Участие в сопровождениях – 5 раз',
                     'Пост "Дом Правительства" - 60 минут',
+                    'Организовать любую тренировку своему составу - 2 раза',
                     'Прохождение собеседования с Начальником СБП ФСО / Начальником ОБО СБП ФСО'
                 ]
             }
@@ -459,8 +460,4 @@ function getNextRank(depKey, currentRank) {
         return path.to;
     }
     return null;
-}
-
-function getConstantsForDepartment(depKey) {
-    return DEPARTMENT_CONSTANTS[depKey] || DEPARTMENT_CONSTANTS.OBO;
 }
