@@ -3,8 +3,1110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор отчетов на повышение</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>СБП ФСО - Генератор отчетов</title>
+    <style>
+        /* ================================================================
+           ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ ГЕНЕРАТОРОВ
+           ================================================================ */
+
+        /* ========== ПЕРЕМЕННЫЕ ТЕМЫ ========== */
+        :root {
+            --bg-body: #f0f4f8;
+            --bg-container: #ffffff;
+            --bg-panel: #f8fafc;
+            --bg-input: #ffffff;
+            --bg-report: #fafcff;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --border-focus: #3b82f6;
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            --badge-bg: #1e293b;
+            --badge-text: #ffffff;
+            --btn-bg: #f1f5f9;
+            --btn-text: #1e293b;
+            --btn-primary-bg: #0f172a;
+            --btn-primary-text: #ffffff;
+            --btn-success-bg: #059669;
+            --btn-success-text: #ffffff;
+            --btn-danger-bg: #dc2626;
+            --btn-danger-text: #ffffff;
+            --mention-bg: #eff6ff;
+            --mention-text: #2563eb;
+            --toast-bg: #0f172a;
+            --toast-text: #ffffff;
+            --transition: 0.3s;
+            --auto-badge-bg: #8b5cf6;
+            --auto-badge-text: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f1724;
+            --bg-container: #1a2332;
+            --bg-panel: #111b2b;
+            --bg-input: #1e2a3a;
+            --bg-report: #0d1624;
+            --text-primary: #e8edf5;
+            --text-secondary: #b0c4de;
+            --text-muted: #6b7f9e;
+            --border-color: #2a3a50;
+            --border-focus: #5b9cf5;
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+            --badge-bg: #3b4f6a;
+            --badge-text: #ffffff;
+            --btn-bg: #2a3a50;
+            --btn-text: #e8edf5;
+            --btn-primary-bg: #3b82f6;
+            --btn-primary-text: #ffffff;
+            --btn-success-bg: #10b981;
+            --btn-success-text: #ffffff;
+            --btn-danger-bg: #ef4444;
+            --btn-danger-text: #ffffff;
+            --mention-bg: #1a2a44;
+            --mention-text: #6ba3ff;
+            --toast-bg: #1a2332;
+            --toast-text: #e8edf5;
+            --auto-badge-bg: #7c3aed;
+            --auto-badge-text: #ffffff;
+        }
+
+        /* ========== БАЗОВЫЕ СТИЛИ ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: var(--bg-body);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            transition: background var(--transition), color var(--transition);
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: var(--bg-container);
+            border-radius: 32px;
+            box-shadow: var(--shadow);
+            padding: 40px 45px;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        /* ========== ШАПКА ========== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all var(--transition);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(0.95);
+        }
+
+        .theme-toggle span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sub {
+            color: var(--text-secondary);
+            border-left: 4px solid var(--border-focus);
+            padding-left: 16px;
+            margin-bottom: 30px;
+            font-size: 15px;
+            transition: color var(--transition);
+        }
+
+        /* ========== ВКЛАДКИ ========== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.3s;
+            font-family: inherit;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-panel);
+        }
+
+        .tab-btn.active {
+            color: var(--border-focus);
+            background: var(--bg-panel);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--border-focus);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== СЕТКА ========== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .container {
+                padding: 24px;
+            }
+            .header-left h1 {
+                font-size: 22px;
+                flex-wrap: wrap;
+            }
+            .tabs {
+                gap: 4px;
+            }
+            .tab-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+                flex: 1;
+                text-align: center;
+                min-width: 80px;
+            }
+        }
+
+        /* ========== ЛЕВАЯ ПАНЕЛЬ (отчет на повышение) ========== */
+        .selector-panel {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .selector-panel label {
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            transition: color var(--transition);
+        }
+
+        .selector-panel label:first-of-type {
+            margin-top: 0;
+        }
+
+        select,
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+
+        select:focus,
+        .input-field:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        select option {
+            background: var(--bg-container);
+            color: var(--text-primary);
+        }
+
+        select:disabled,
+        .input-field:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .rank-auto-hint {
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--bg-container);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .rank-auto-hint .auto-badge {
+            background: var(--auto-badge-bg);
+            color: var(--auto-badge-text);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .rank-auto-hint strong {
+            color: var(--border-focus);
+        }
+
+        .requirements-box {
+            margin-top: 18px;
+            background: var(--bg-container);
+            border-radius: 16px;
+            padding: 18px 20px;
+            border: 1px solid var(--border-color);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .requirements-box h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 6px 0;
+            font-size: 14px;
+            border-bottom: 1px dashed var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .req-item:last-child {
+            border-bottom: none;
+        }
+
+        .req-badge {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 30px;
+            white-space: nowrap;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .req-text {
+            color: var(--text-primary);
+        }
+
+        .hint {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: color var(--transition);
+        }
+
+        .hint .inline-code {
+            background: var(--bg-panel);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ========== ПРАВАЯ ПАНЕЛЬ (отчет на повышение) ========== */
+        .form-panel {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .form-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            transition: color var(--transition);
+        }
+
+        .form-group .input-field {
+            width: 100%;
+        }
+
+        .form-group .input-field::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .form-group textarea.input-field {
+            min-height: 60px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .form-group .requirement-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .form-group .requirement-label .req-num {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 1px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .form-group .requirement-label .multi-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-left: 4px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        /* ========== КНОПКИ ========== */
+        .btn {
+            background: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--btn-text);
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: scale(0.97);
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            border-color: var(--btn-primary-bg);
+        }
+
+        .btn-success {
+            background: var(--btn-success-bg);
+            color: var(--btn-success-text);
+            border-color: var(--btn-success-bg);
+        }
+
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            color: var(--btn-danger-text);
+            border-color: var(--btn-danger-bg);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border-color);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background: var(--btn-bg);
+        }
+
+        .btn-sm {
+            padding: 2px 12px;
+            font-size: 11px;
+            min-height: 24px;
+            border-radius: 20px;
+        }
+
+        /* ========== ОТЧЕТ (результат) ========== */
+        .report-output {
+            margin-top: 20px;
+            display: none;
+            animation: slideDown 0.4s ease;
+        }
+
+        .report-output.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .report-body {
+            background: var(--bg-report);
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--text-primary);
+            transition: background var(--transition), border var(--transition), color var(--transition);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .report-body .mention {
+            color: var(--mention-text);
+            background: var(--mention-bg);
+            padding: 0 6px;
+            border-radius: 6px;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .report-footer {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .report-footer .btn {
+            padding: 6px 18px;
+            font-size: 13px;
+        }
+
+        /* ========== TOAST ========== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--toast-bg);
+            color: var(--toast-text);
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 999;
+            border: 1px solid var(--border-color);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ========== SCROLLBAR ========== */
+        .report-body::-webkit-scrollbar,
+        .reports-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .report-body::-webkit-scrollbar-track,
+        .reports-list::-webkit-scrollbar-track {
+            background: var(--bg-panel);
+            border-radius: 8px;
+        }
+
+        .report-body::-webkit-scrollbar-thumb,
+        .reports-list::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 8px;
+        }
+
+        .report-body::-webkit-scrollbar-thumb:hover,
+        .reports-list::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ========== АДАПТИВ ========== */
+        @media (max-width: 600px) {
+            body {
+                padding: 16px 8px;
+            }
+            .container {
+                padding: 16px;
+            }
+            .header-left h1 {
+                font-size: 20px;
+            }
+            .btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .report-body {
+                font-size: 13px;
+                padding: 16px;
+                max-height: 400px;
+            }
+            .theme-toggle span {
+                display: none;
+            }
+            .rank-auto-hint {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .report-item {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            .report-item .report-text {
+                font-size: 11px;
+            }
+            .timer-display {
+                font-size: 16px;
+                min-width: 100px;
+            }
+            .status-timer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .panel-actions .btn {
+                min-width: 100%;
+            }
+            .report-actions-bottom .btn {
+                min-width: 100%;
+            }
+        }
+
+        /* ================================================================ */
+        /* ========== ГЕНЕРАТОР ПОСТА ========== */
+        /* ================================================================ */
+
+        .post-generator-wrapper {
+            width: 100%;
+        }
+
+        .post-generator-wrapper .panel {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            transition: background var(--transition), border var(--transition);
+        }
+
+        .post-generator-wrapper .panel h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .post-generator-wrapper .panel label {
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            transition: color var(--transition);
+        }
+
+        .post-generator-wrapper .panel label:first-of-type {
+            margin-top: 0;
+        }
+
+        .post-generator-wrapper .panel-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .post-generator-wrapper .panel-actions .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        /* Карта */
+        .map-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: var(--bg-container);
+        }
+
+        .map-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .map-container .map-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            min-height: 200px;
+            color: var(--text-muted);
+        }
+
+        .map-container .map-placeholder .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .map-container .map-placeholder .text {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .map-container .map-placeholder .hint {
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Статус и таймер */
+        .status-timer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            background: var(--bg-container);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-badge .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .status-badge.idle .dot {
+            background: #94a3b8;
+        }
+        .status-badge.active .dot {
+            background: #3b82f6;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+            animation: pulse 1.8s infinite;
+        }
+        .status-badge.completed .dot {
+            background: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .status-badge.idle {
+            color: var(--text-muted);
+            background: var(--bg-panel);
+        }
+        .status-badge.active {
+            color: #3b82f6;
+            background: #dbeafe;
+        }
+        .status-badge.completed {
+            color: #10b981;
+            background: #d1fae5;
+        }
+
+        [data-theme="dark"] .status-badge.active {
+            background: #1a2a44;
+            color: #6ba3ff;
+        }
+        [data-theme="dark"] .status-badge.completed {
+            background: #1a3a2a;
+            color: #34d399;
+        }
+
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--border-focus);
+            background: var(--bg-input);
+            padding: 4px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .timer-display.inactive {
+            color: var(--text-muted);
+        }
+
+        .timer-display.completed {
+            color: var(--btn-success-bg);
+            border-color: var(--btn-success-bg);
+        }
+
+        /* Отчеты поста */
+        .reports-container {
+            margin-top: 24px;
+            background: var(--bg-panel);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .reports-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .reports-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .reports-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+        }
+
+        .report-item {
+            background: var(--bg-container);
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 6px;
+            border-left: 3px solid var(--border-focus);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .report-item.ready {
+            border-left-color: var(--btn-success-bg);
+        }
+
+        .report-item.empty {
+            border-left-color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .report-item .report-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px 8px;
+        }
+
+        .report-item .report-type {
+            display: inline-block;
+            padding: 0 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 18px;
+            flex-shrink: 0;
+        }
+
+        .report-type.start {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        .report-type.interim {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        .report-type.end {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        [data-theme="dark"] .report-type.start {
+            background: #1a2a44;
+            color: #6ba3ff;
+        }
+        [data-theme="dark"] .report-type.interim {
+            background: #3d2a1a;
+            color: #fbbf24;
+        }
+        [data-theme="dark"] .report-type.end {
+            background: #1a3a2a;
+            color: #34d399;
+        }
+
+        .report-item .report-time {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-family: 'Segoe UI', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .report-item .report-status {
+            font-size: 11px;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .report-item .report-status.ready-status {
+            color: var(--btn-success-bg);
+        }
+        .report-item .report-status.waiting-status {
+            color: var(--text-muted);
+        }
+
+        .report-item .report-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .report-item .report-text {
+            font-size: 12px;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .report-actions-bottom {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .report-actions-bottom .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        /* ================================================================ */
+        /* ========== ГЕНЕРАТОР ЗАПРОСА ========== */
+        /* ================================================================ */
+
+        .request-generator {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .request-generator h3 {
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .request-output {
+            margin-top: 24px;
+            animation: slideDown 0.4s ease;
+        }
+
+        .request-output .report-body {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: var(--bg-report);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .request-info {
+            background: var(--bg-container);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-top: 16px;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .post-actions .btn {
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        /* ================================================================ */
+        /* ========== АДАПТИВ ДЛЯ ТАБОВ ========== */
+        /* ================================================================ */
+
+        @media (max-width: 600px) {
+            .tabs {
+                gap: 4px;
+            }
+            .tab-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+                flex: 1;
+                text-align: center;
+                min-width: 80px;
+            }
+            .post-actions .btn {
+                min-width: 100%;
+            }
+            .post-generator-wrapper .panel-actions .btn {
+                min-width: 100%;
+            }
+            .report-actions-bottom .btn {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -13,106 +1115,1837 @@
         <div class="header">
             <div class="header-left">
                 <h1>
-                    📋 Генератор отчётов
-                    <small>Created by Miklosh Bulava</small>
+                    📋 СБП ФСО
+                    <small>Генератор отчетов</small>
                 </h1>
             </div>
             <div class="header-controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+                <button class="theme-toggle" id="themeToggle">
                     🌙 <span>Тёмная</span>
                 </button>
             </div>
         </div>
-        <div class="sub">Автоматическое формирование ходатайства о присвоении очередного воинского звания</div>
+        <div class="sub">Автоматическое формирование служебных документов</div>
 
-        <!-- ===== ОСНОВНАЯ СЕТКА ===== -->
-        <div class="grid-2">
-            <!-- ЛЕВАЯ ПАНЕЛЬ: выбор звания -->
-            <div class="selector-panel">
-                <label for="departmentSelect">📍 Подразделение</label>
-                <select id="departmentSelect">
-                    <!-- Заполняется из data.js -->
-                </select>
+        <!-- ===== ВКЛАДКИ ===== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="report">📄 Отчет на повышение</button>
+            <button class="tab-btn" data-tab="post">🚧 Генератор поста</button>
+            <button class="tab-btn" data-tab="request">📝 Запрос</button>
+        </div>
 
-                <label for="rankFromSelect">🔹 Текущее звание</label>
-                <select id="rankFromSelect"></select>
+        <!-- ============================================================ -->
+        <!-- ================ ВКЛАДКА 1: ОТЧЕТ НА ПОВЫШЕНИЕ ================ -->
+        <!-- ============================================================ -->
+        <div id="tab-report" class="tab-content active">
+            <div class="grid-2">
+                <!-- ЛЕВАЯ ПАНЕЛЬ -->
+                <div class="selector-panel">
+                    <label for="departmentSelect">📍 Подразделение</label>
+                    <select id="departmentSelect"></select>
 
-                <div class="rank-auto-hint">
-                    <span class="auto-badge">➡️ Авто</span>
-                    <span>Желаемое звание: <strong id="rankToAuto">Старший Сержант</strong></span>
-                </div>
+                    <label for="rankFromSelect">🔹 Текущее звание</label>
+                    <select id="rankFromSelect"></select>
 
-                <div class="requirements-box">
-                    <h3>📌 Требования для повышения</h3>
-                    <div id="requirementsList">
-                        <div class="req-item" style="color: var(--text-muted);">Выберите звание</div>
+                    <div class="rank-auto-hint">
+                        <span class="auto-badge">➡️ Авто</span>
+                        <span>Желаемое звание: <strong id="rankToAuto">Старший Сержант</strong></span>
+                    </div>
+
+                    <div class="requirements-box">
+                        <h3>📌 Требования для повышения</h3>
+                        <div id="requirementsList">
+                            <div class="req-item" style="color: var(--text-muted);">Выберите звание</div>
+                        </div>
+                    </div>
+                    <div class="hint">
+                        <span class="inline-code">⚡</span> После выбора звания заполните ссылки справа
                     </div>
                 </div>
-                <div class="hint">
-                    <span class="inline-code">⚡</span> После выбора звания заполните ссылки справа
+
+                <!-- ПРАВАЯ ПАНЕЛЬ -->
+                <div class="form-panel">
+                    <div class="form-header">
+                        <h2>🔗 Введите данные</h2>
+                        <div class="btn-group">
+                            <button class="btn btn-outline" id="clearBtn">🗑️ Очистить</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fullName">👤 ФИО сотрудника</label>
+                        <input class="input-field" id="fullName" type="text" placeholder="Иванов Иван Иванович" />
+                        <div style="margin-top: 4px; font-size: 13px; color: var(--text-muted);">
+                            Будет автоматически подставлено в текст: <strong id="rankPreview">Сержант</strong>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profileLink">🔗 Ссылка на профиль</label>
+                        <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
+                    </div>
+
+                    <div id="requirementsFields">
+                        <div style="color: var(--text-muted); font-size: 14px; padding: 12px 0;">
+                            Выберите звание, чтобы увидеть поля
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" id="generateBtn" style="width: 100%; justify-content: center; padding: 14px;">
+                            🚀 Сгенерировать отчет
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- ПРАВАЯ ПАНЕЛЬ: форма для ссылок -->
-            <div class="form-panel">
-                <div class="form-header">
-                    <h2>🔗 Введите данные</h2>
-                    <div class="btn-group">
-                        <button class="btn btn-outline" id="clearBtn">🗑️ Очистить</button>
-                    </div>
+            <div class="report-output" id="reportOutput">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <h3 style="color: var(--text-primary);">📄 Сгенерированный отчет</h3>
+                    <button class="btn btn-success" id="copyReportBtn">📋 Копировать</button>
                 </div>
-
-                <!-- Поле для ФИО -->
-                <div class="form-group">
-                    <label for="fullName">👤 ФИО сотрудника</label>
-                    <input class="input-field" id="fullName" type="text" placeholder="Иванов Иван Иванович" />
-                    <div style="margin-top: 4px; font-size: 13px; color: var(--text-muted);">
-                        Будет автоматически подставлено в текст: <strong id="rankPreview">Сержант</strong>
-                    </div>
-                </div>
-
-                <!-- Поле для профиля -->
-                <div class="form-group">
-                    <label for="profileLink">🔗 Ссылка на профиль</label>
-                    <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
-                </div>
-
-                <!-- Динамические поля для требований -->
-                <div id="requirementsFields">
-                    <div style="color: var(--text-muted); font-size: 14px; padding: 12px 0;">
-                        Выберите звание, чтобы увидеть поля
-                    </div>
-                </div>
-
-                <!-- Кнопка генерации -->
-                <div style="margin-top: 20px;">
-                    <button class="btn btn-primary" id="generateBtn" style="width: 100%; justify-content: center; padding: 14px;">
-                        🚀 Сгенерировать отчет
-                    </button>
+                <div class="report-body" id="reportBody"></div>
+                <div class="report-footer">
+                    <span>✅ Отчет готов к отправке</span>
+                    <span style="font-size: 12px;">Проверьте все ссылки перед копированием</span>
                 </div>
             </div>
         </div>
 
-        <!-- ===== ВЫВОД ОТЧЕТА ===== -->
-        <div class="report-output" id="reportOutput">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <h3 style="color: var(--text-primary);">📄 Сгенерированный отчет</h3>
-                <button class="btn btn-success" id="copyReportBtn">📋 Копировать</button>
+        <!-- ============================================================ -->
+        <!-- ================ ВКЛАДКА 2: ГЕНЕРАТОР ПОСТА ================ -->
+        <!-- ============================================================ -->
+        <div id="tab-post" class="tab-content">
+            <div class="post-generator-wrapper">
+                <div class="grid-2">
+                    <!-- ЛЕВАЯ ПАНЕЛЬ: Карта -->
+                    <div class="panel">
+                        <h3>🗺️ Схема расположения постов</h3>
+                        <div class="map-container" id="mapContainer">
+                            <img id="mapImage" src="map.png" alt="Схема постов" style="display: none;" />
+                            <div class="map-placeholder" id="mapPlaceholder">
+                                <div class="icon">🗺️</div>
+                                <div class="text">Загрузите схему постов</div>
+                                <div class="hint">Поместите файл map.png в корневую папку</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn btn-outline btn-sm" id="loadMapBtn">📤 Загрузить схему</button>
+                            <button class="btn btn-outline btn-sm" id="removeMapBtn" style="color: #ef4444; border-color: #ef4444;">🗑️ Удалить</button>
+                        </div>
+                        <input type="file" id="mapFileInput" accept="image/*" style="display: none;" />
+                    </div>
+
+                    <!-- ПРАВАЯ ПАНЕЛЬ: Настройки -->
+                    <div class="panel">
+                        <h3>⚙️ Настройка поста</h3>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="rankSelect">🎖️ Звание</label>
+                                <select id="rankSelect">
+                                    <option value="Рядовой">Рядовой</option>
+                                    <option value="Ефрейтор">Ефрейтор</option>
+                                    <option value="Младший сержант">Младший сержант</option>
+                                    <option value="Сержант" selected>Сержант</option>
+                                    <option value="Старший сержант">Старший сержант</option>
+                                    <option value="Старшина">Старшина</option>
+                                    <option value="Прапорщик">Прапорщик</option>
+                                    <option value="Старший прапорщик">Старший прапорщик</option>
+                                    <option value="Младший лейтенант">Младший лейтенант</option>
+                                    <option value="Лейтенант">Лейтенант</option>
+                                    <option value="Старший лейтенант">Старший лейтенант</option>
+                                    <option value="Капитан">Капитан</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="surnameInput">👤 Имя Фамилия <span style="color: #ef4444;">*</span></label>
+                                <input type="text" id="surnameInput" class="input-field" placeholder="Иванов Иван" />
+                                <div style="color: #ef4444; font-size: 12px; height: 18px; margin-top: 2px;" id="surnameError"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="locationSelect">📍 Пост</label>
+                                <select id="locationSelect">
+                                    <option value="КПП-1">КПП-1</option>
+                                    <option value="КПП-2">КПП-2</option>
+                                    <option value="КПП-3">КПП-3</option>
+                                    <option value="Холл УФСО">Холл УФСО</option>
+                                    <option value="Дом Правительства">Дом Правительства</option>
+                                    <option value="Вечный огонь">Вечный огонь</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="sostavSelect">👥 Состав</label>
+                                <select id="sostavSelect">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3" selected>3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div>
+                                <label for="durationSelect">⏱️ Продолжительность</label>
+                                <select id="durationSelect">
+                                    <option value="30">30 минут</option>
+                                    <option value="45">45 минут</option>
+                                    <option value="60" selected>60 минут</option>
+                                    <option value="90">90 минут</option>
+                                    <option value="120">120 минут</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="statusSelect">📊 Статус</label>
+                                <select id="statusSelect">
+                                    <option value="0">Код 0</option>
+                                    <option value="1" selected>Код 1</option>
+                                    <option value="2">Код 2</option>
+                                    <option value="3">Код 3</option>
+                                    <option value="4">Код 4</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="panel-actions">
+                            <button class="btn btn-primary" id="mainBtn">🚀 ЗАСТУПИТЬ</button>
+                            <button class="btn btn-outline" id="clearBtn">🗑️ ОЧИСТИТЬ</button>
+                        </div>
+
+                        <div class="status-timer">
+                            <div class="status-badge idle" id="statusBadge">
+                                <span class="dot"></span>
+                                <span id="statusText">Ожидание</span>
+                            </div>
+                            <div class="timer-display inactive" id="timerDisplay">--:--:--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== ОТЧЕТЫ ПОСТА ===== -->
+                <div class="reports-container">
+                    <div class="reports-header">
+                        <h3>📋 Отчеты поста</h3>
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <span style="font-size: 13px; color: var(--text-secondary);">Пост:</span>
+                            <span id="postStatusText" style="font-weight: 600; color: var(--text-secondary);">не активен</span>
+                        </div>
+                    </div>
+
+                    <div class="reports-list" id="reportsList">
+                        <div style="color: var(--text-muted); text-align: center; padding: 30px 20px; font-size: 14px;">
+                            📭 Начните пост, чтобы увидеть отчеты
+                        </div>
+                    </div>
+
+                    <div class="report-actions-bottom">
+                        <button class="btn btn-success" id="copyAllBtn">📋 Копировать все готовые</button>
+                        <button class="btn btn-outline" id="clearReportsBtn">🗑️ Очистить отчеты</button>
+                    </div>
+                </div>
             </div>
-            <div class="report-body" id="reportBody"></div>
-            <div class="report-footer">
-                <span>✅ Отчет готов к отправке</span>
-                <span style="font-size: 12px;">Проверьте все ссылки перед копированием</span>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- ================ ВКЛАДКА 3: ЗАПРОС ================ -->
+        <!-- ============================================================ -->
+        <div id="tab-request" class="tab-content">
+            <div class="request-generator">
+                <h3>📝 Генератор запроса</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requestType">📌 Тип запроса</label>
+                        <select id="requestType" class="input-field">
+                            <option value="training">Тренировка</option>
+                            <option value="exam">Экзамен</option>
+                            <option value="test">Тест</option>
+                            <option value="lecture">Лекция</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestDepartment">📍 Отдел</label>
+                        <select id="requestDepartment" class="input-field">
+                            <option value="OBO">ОБО СБП</option>
+                            <option value="CSN">ЦСН СБП</option>
+                            <option value="AS">АС ФСО</option>
+                            <option value="ACADEMY">Академия ФСО</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="requestRank">🎖️ Звание</label>
+                        <select id="requestRank" class="input-field">
+                            <option value="Рядовой">Рядовой</option>
+                            <option value="Ефрейтор">Ефрейтор</option>
+                            <option value="Младший Сержант">Младший Сержант</option>
+                            <option value="Сержант" selected>Сержант</option>
+                            <option value="Старший Сержант">Старший Сержант</option>
+                            <option value="Старшина">Старшина</option>
+                            <option value="Прапорщик">Прапорщик</option>
+                            <option value="Старший Прапорщик">Старший Прапорщик</option>
+                            <option value="Младший Лейтенант">Младший Лейтенант</option>
+                            <option value="Лейтенант">Лейтенант</option>
+                            <option value="Старший Лейтенант">Старший Лейтенант</option>
+                            <option value="Капитан">Капитан</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requestName">👤 Имя Фамилия</label>
+                        <input class="input-field" id="requestName" type="text" placeholder="Иванов Иван" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="requestProfile">🔗 Ссылка на профиль</label>
+                    <input class="input-field" id="requestProfile" type="text" placeholder="https://example.com/profile/your_id" />
+                </div>
+
+                <div class="form-group">
+                    <label for="requestItem">📋 Выберите пункт</label>
+                    <select id="requestItem" class="input-field">
+                        <option value="">Выберите тип и отдел</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="requestCustomItem">✏️ Или введите свой вариант</label>
+                    <input class="input-field" id="requestCustomItem" type="text" placeholder="Например: Тренировка по тактике" />
+                </div>
+
+                <div class="post-actions">
+                    <button class="btn btn-primary" id="generateRequestBtn">📝 Сгенерировать запрос</button>
+                    <button class="btn btn-outline" id="clearRequestBtn">🗑️ Очистить</button>
+                </div>
+
+                <div class="request-output" id="requestOutput" style="display: none; margin-top: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                        <h3 style="color: var(--text-primary);">📄 Сгенерированный запрос</h3>
+                        <button class="btn btn-success" id="copyRequestBtn">📋 Копировать</button>
+                    </div>
+                    <div class="report-body" id="requestBody"></div>
+                </div>
+
+                <div class="request-info">
+                    <strong>📌 Примечание:</strong> Поля "Кому" и "Копия" автоматически заполняются в зависимости от выбранного отдела.
+                </div>
             </div>
         </div>
     </div>
 
     <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast">✅ Отчет скопирован</div>
+    <div id="toast" class="toast">✅ Готово</div>
 
-    <!-- ===== ПОДКЛЮЧЕНИЕ JS ===== -->
-    <script src="js/data.js"></script>
-    <script src="js/theme.js"></script>
-    <script src="js/app.js"></script>
+    <!-- ================================================================ -->
+    <!-- ================ СКРИПТЫ ================ -->
+    <!-- ================================================================ -->
+
+    <script>
+        // ================================================================
+        // 1. БАЗА ДАННЫХ ОТДЕЛОВ (ОТЧЕТ НА ПОВЫШЕНИЕ)
+        // ================================================================
+
+        const RANKS_DB = {
+            OBO: {
+                name: 'ОБО СБП ФСО',
+                displayName: 'ОБО (Отдел Безопасности и Охраны)',
+                paths: [
+                    { from: 'Сержант', to: 'Старший Сержант', requirements: [
+                        'Прослушивание вступительной лекции СБП ФСО',
+                        'Пост "Дом Правительства" - 30 минут',
+                        'Сдать экзамен по сопровождению начальству',
+                        'Сдать экзамен по задержанию начальству пользуясь процессуальным кодексом',
+                        'Сдать тест по сопровождению'
+                    ] },
+                    { from: 'Старший Сержант', to: 'Старшина', requirements: [
+                        'Пост "КПП-2" - 30 минут',
+                        'Тренировка по передаче задержания',
+                        'Принять участие в фин. поставке - 3 раза',
+                        'Принять участие в других государственных структур поставках - 3 раза'
+                    ] },
+                    { from: 'Старшина', to: 'Прапорщик', requirements: [
+                        'Принять участие в 1-ом сопровождении',
+                        'Передать задержание сотруднику государственных структур - 2 раза',
+                        'Принять участие в финансовой поставке - 4 раза',
+                        'Принять Участие в других государственных поставках - 4 раза',
+                        'Сдать все основные законы начальству СБП ФСО'
+                    ] },
+                    { from: 'Прапорщик', to: 'Старший Прапорщик', requirements: [
+                        'Тренировка по Огневой Подготовке',
+                        'Тренировка по передаче задержания',
+                        'Передать задержание в правоохранительные органы - 3 раза',
+                        'Принять участие в финансовой поставке - 3 раза',
+                        'Принять участие в других государственных поставках - 5 раз',
+                        'Принять участие в сопровождении - 2 раза'
+                    ] },
+                    { from: 'Старший Прапорщик', to: 'Младший Лейтенант', requirements: [
+                        'Принять участие в финансовых поставках - 7 раз',
+                        'Принять участие в других государственных структур поставках - 7 раз',
+                        'Организовать любую тренировку своему составу',
+                        'Участие в сопровождениях - 3 раза',
+                        'Передать задержание сотруднику государственных структур - 3 раза',
+                        'Получить военный билет',
+                        'Получить лицензию на оружие',
+                        'Прослушивание лекции по проведению фин.поставки',
+                        'Пост "КПП-3" - 45 минут'
+                    ] },
+                    { from: 'Младший Лейтенант', to: 'Лейтенант', requirements: [
+                        'Принять участие в финансовых поставках - 8 раз',
+                        'Организовать финансовую поставку - 3 раза, 2 из которых должны быть доставлены',
+                        'Принять участие в других государственных структур поставках - 10 раз',
+                        'Передать задержание в правоохранительные органы - 4 раза',
+                        'Участие в сопровождениях - 4 раза',
+                        'Тренировка по Огневой Подготовке',
+                        'Тренировка по Физической Подготовке',
+                        'Пост "КПП-1" - 45 минут'
+                    ] },
+                    { from: 'Лейтенант', to: 'Старший Лейтенант', requirements: [
+                        'Принять участие в финансовых поставках - 9 раз',
+                        'Принять участие в других государственных структур поставках - 12 раз',
+                        'Организовать финансовую поставку – 4 раза, 3 из которых должны быть доставлены',
+                        'Передать задержание в правоохранительные органы - 5 раз',
+                        'Участие в сопровождениях - 5 раз',
+                        'Тренировка по Огневой Подготовке',
+                        'Тренировка по Физической Подготовке'
+                    ] },
+                    { from: 'Старший Лейтенант', to: 'Капитан', requirements: [
+                        'Принять участие в финансовых поставках - 10 раз',
+                        'Принять участие в других государственных структур поставках – 15 раз',
+                        'Передать задержание в правоохранительные органы - 6 раз',
+                        'Организовать финансовую поставку – 7 раз, 5 из которых должны быть доставлены',
+                        'Участие в сопровождениях – 5 раз',
+                        'Пост "Дом Правительства" - 60 минут',
+                        'Организовать любую тренировку своему составу - 2 раза'
+                    ] }
+                ]
+            },
+            CSN: {
+                name: 'ЦСН СБП ФСО',
+                displayName: 'ЦСН (Центр Специального Назначения)',
+                paths: [
+                    { from: 'Сержант', to: 'Старший Сержант', requirements: [
+                        'Прослушивание вступительной лекции СБП ФСО',
+                        'Тренировка по огневой подготовке - 1 раз',
+                        'Тренировка по оказанию сопровождения - 1 раз',
+                        'Участие в сопровождениях - 2 раза',
+                        'Сдать экзамен по сопровождению начальству',
+                        'Сдать экзамен по задержанию начальству пользуясь процессуальным кодексом',
+                        'Сдать тест по сопровождению'
+                    ] },
+                    { from: 'Старший Сержант', to: 'Старшина', requirements: [
+                        'Тренировка по огневой подготовке - 1 раз',
+                        'Тренировка по оказанию сопровождения - 1 раз',
+                        'Тренировка по Физической подготовке - 1 раз',
+                        'Передать задержание сотруднику государственных структур - 3 раза',
+                        'Участие в сопровождениях - 2 раза',
+                        'Принять участие в фин. поставке - 5 раз',
+                        'Принять участие в других государственных структур поставках - 7 раз'
+                    ] },
+                    { from: 'Старшина', to: 'Прапорщик', requirements: [
+                        'Принять участие в сопровождении - 3 раза',
+                        'Тренировка по огневой подготовке - 1 раз',
+                        'Передать задержание сотруднику государственных структур - 10 раз',
+                        'Принять участие в финансовой поставке - 6 раз',
+                        'Принять участие в других государственных поставках - 8 раз'
+                    ] },
+                    { from: 'Прапорщик', to: 'Старший Прапорщик', requirements: [
+                        'Тренировка по огневой подготовке - 1 раз',
+                        'Тренировка по оказанию сопровождения - 1 раз',
+                        'Тренировка по физической подготовке - 1 раз',
+                        'Участие в сопровождении - 2 раза',
+                        'Принять участие в ограблении государственных объектов - 5 раз',
+                        'Передать задержание в правоохранительные органы - 10 раз',
+                        'Принять участие в финансовой поставке - 6 раз',
+                        'Принять участие в других государственных поставках - 9 раз',
+                        'Сдать все основные законы начальству СБП ФСО'
+                    ] },
+                    { from: 'Старший Прапорщик', to: 'Младший Лейтенант', requirements: [
+                        'Принять участие в финансовых поставках - 15 раз',
+                        'Принять участие в других государственных структур поставках - 20 раз',
+                        'Тренировка по задержанию - 1 раз',
+                        'Принять участие в ограблении государственных объектов - 10 раз',
+                        'Передать задержание в правоохранительные органы - 15 раз',
+                        'Участие в войне за КрАЗ - 1 раз',
+                        'Участие в сопровождении - 2 раза',
+                        'Получить военный билет',
+                        'Получить лицензию на оружие',
+                        'Прослушивание лекции по проведению фин.поставки'
+                    ] },
+                    { from: 'Младший Лейтенант', to: 'Лейтенант', requirements: [
+                        'Принять участие в финансовых поставках - 10 раз',
+                        'Организовать финансовую поставку - 4 раза, 2 из которых должны быть доставлены',
+                        'Принять участие в других государственных структур поставках - 25 раз',
+                        'Принять участие в войне за КрАЗ - 2 раза',
+                        'Принять участие в ограблении государственных объектов - 15 раз',
+                        'Передать задержание в правоохранительные органы - 20 раз',
+                        'Участие в сопровождении - 3 раза',
+                        'Тренировка по огневой подготовке - 1 раз'
+                    ] },
+                    { from: 'Лейтенант', to: 'Старший Лейтенант', requirements: [
+                        'Принять участие в финансовых поставках - 10 раз',
+                        'Принять участие в других государственных структур поставках - 25 раз',
+                        'Принять участие в ограблении государственных объектов - 15 раз',
+                        'Участие в войне за КрАЗ - 4 раза',
+                        'Организовать финансовую поставку – 6 раз, 4 из которых должны быть доставлены',
+                        'Передать задержание в правоохранительные органы - 20 раз',
+                        'Тренировка по огневой подготовке - 1 раз',
+                        'Участие в сопровождении - 4 раза'
+                    ] },
+                    { from: 'Старший Лейтенант', to: 'Капитан', requirements: [
+                        'Принять участие в финансовых поставках - 15 раз',
+                        'Принять участие в других государственных структур поставках – 35 раз',
+                        'Принять участие в ограблении государственных объектов - 25 раз',
+                        'Участие в войне за КрАЗ - 6 раз',
+                        'Организовать финансовую поставку – 10 раз, 10 из которых должны быть доставлены',
+                        'Участие в сопровождениях – 6 раз'
+                    ] }
+                ]
+            },
+            ACADEMY: {
+                name: 'Академии ФСО',
+                displayName: 'Академия ФСО',
+                paths: [
+                    { from: 'Рядовой', to: 'Ефрейтор', requirements: [
+                        'Прослушать вступительную лекцию',
+                        'Заполнить соглашение с УФСО'
+                    ] },
+                    { from: 'Ефрейтор', to: 'Младший Сержант', requirements: [
+                        'Пост «Холл УФСО» - 30 минут',
+                        'Самостоятельно сдать экзамен на знание внутреннего устава',
+                        'Сдать теоретический экзамен второго курса на знание НПА',
+                        'Сдать экзамен по несению службы на постах',
+                        'Посетить 1 тренировку/мероприятие',
+                        'Посетить 1 финансовую поставку'
+                    ] },
+                    { from: 'Младший Сержант', to: 'Сержант', requirements: [
+                        'Пост «КПП-3» - 30 минут',
+                        'Пост «Дом Правительства» - 30 минут',
+                        'Сдать теоретический экзамен по сопровождению охраняемого лица',
+                        'Сдать теоретический экзамен по проведению финансовой поставки',
+                        'Сдать практический экзамен по передаче задержания',
+                        'Посетить 1 тренировку/мероприятие',
+                        'Посетить 2 финансовых поставки'
+                    ] }
+                ]
+            },
+            AS: {
+                name: 'АС СБП ФСО',
+                displayName: 'АС (Административная Служба)',
+                paths: [
+                    { from: 'Сержант', to: 'Старший Сержант', requirements: [
+                        'Прослушать лекцию о проведении экзаменов для Академии ФСО',
+                        'Сдать экзамен на принятие практических экзаменов',
+                        'Отстоять пост "Дом Правительства" - 30 минут',
+                        'Принять 1 теоретический экзамен',
+                        'Проверить 2 отчета на повышение курсантов академии ФСО',
+                        'Провести 2 тренировки Курсантам Академии'
+                    ] },
+                    { from: 'Старший Сержант', to: 'Старшина', requirements: [
+                        'Сдать экзамен по проведению вступительной лекции для Академии ФСО',
+                        'Отстоять пост "Дом Правительства" - 30 минут',
+                        'Принять участие в одном собеседовании, организованном ФСО',
+                        'Провести 3 тренировки Курсантам Академии',
+                        'Проверить 4 отчета на повышение курсантов академии ФСО',
+                        'Провести 4 теоретических экзамена 2-го и 3-го курсов для курсантов академии ФСО'
+                    ] },
+                    { from: 'Старшина', to: 'Прапорщик', requirements: [
+                        'Проверить 7 отчетов на повышение курсантов академии ФСО',
+                        'Провести 5 теоретических экзаменов 2-го и 3-го курсов для курсантов академии ФСО',
+                        'Принять участие в двух собеседованиях, организованных ФСО',
+                        'Принять участие в двух финансовых поставках',
+                        'Провести 5 тренировок Курсантам Академии',
+                        'Провести 2 вступительные лекции Курсантам Академии'
+                    ] },
+                    { from: 'Прапорщик', to: 'Старший Прапорщик', requirements: [
+                        'Провести 4 вступительные лекции курсантам академии ФСО',
+                        'Проверить 10 отчетов на повышение курсантов академии ФСО',
+                        'Провести 7 экзаменов для курсантов академии ФСО',
+                        'Принять участие в трех собеседованиях, организованных ФСО',
+                        'Принять участие в трех финансовых поставках',
+                        'Провести 5 тренировок Курсантам Академии'
+                    ] },
+                    { from: 'Старший Прапорщик', to: 'Младший Лейтенант', requirements: [
+                        'Наличие Военного билета',
+                        'Сдать экзамен по проведению собеседования в Академию ФСО',
+                        'Провести 6 вступительных лекций курсантам академии ФСО',
+                        'Проверить 10 отчетов на повышение курсантов академии ФСО',
+                        'Провести 8 теоретических экзаменов 2-го и 3-го курсов для курсантов академии ФСО',
+                        'Провести 4 практических экзамена для курсантов академии ФСО',
+                        'Принять участие в четырех собеседованиях, организованных ФСО',
+                        'Принять участие в двух финансовых поставках',
+                        'Провести 5 тренировок Курсантам Академии',
+                        'Посетить 3 государственных поставки'
+                    ] },
+                    { from: 'Младший Лейтенант', to: 'Лейтенант', requirements: [
+                        'Провести 8 вступительных лекций курсантам академии ФСО',
+                        'Проверить 10 отчетов на повышение курсантов академии ФСО',
+                        'Провести 10 теоретических экзаменов 2-го и 3-го курсов для курсантов академии ФСО',
+                        'Провести 5 практических экзаменов для курсантов академии ФСО',
+                        'Принять участие в трех собеседованиях, организованных ФСО',
+                        'Принять участие в четырех финансовых поставках',
+                        'Провести одну финансовую поставку',
+                        'Провести одно собеседование в Академию ФСО',
+                        'Провести 5 тренировок Курсантам Академии',
+                        'Посетить 4 государственных поставки'
+                    ] },
+                    { from: 'Лейтенант', to: 'Старший Лейтенант', requirements: [
+                        'Провести 9 вступительных лекций курсантам академии ФСО',
+                        'Проверить 10 отчетов на повышение курсантов академии ФСО',
+                        'Провести 10 теоретических экзаменов 2-го и 3-го курсов для курсантов академии ФСО',
+                        'Провести 5 практических экзаменов для курсантов академии ФСО',
+                        'Принять участие в четырех собеседованиях, организованных ФСО',
+                        'Принять участие в трех финансовых поставках',
+                        'Провести 7 тренировок Курсантам Академии',
+                        'Провести две финансовых поставки',
+                        'Провести два собеседования в Академию ФСО',
+                        'Провести 1 лекцию о проведении экзаменов для Академии ФСО',
+                        'Посетить 5 государственных поставок'
+                    ] },
+                    { from: 'Старший Лейтенант', to: 'Капитан', requirements: [
+                        'Провести пять собеседований в Академию ФСО',
+                        'Провести 10 теоретических экзаменов 2-го и 3-го курсов для курсантов академии ФСО',
+                        'Провести 10 вступительных лекций курсантам академии ФСО',
+                        'Провести 2 лекции о проведении экзаменов для Академии ФСО',
+                        'Провести 7 тренировок Курсантам Академии',
+                        'Провести 3 финансовых поставки',
+                        'Желание работать, проводить собеседования, проводить экзамены!',
+                        'Рекомендательное письмо от Руководства ФСО',
+                        'Повышение происходит на усмотрение Начальника АС ФСО'
+                    ] }
+                ]
+            }
+        };
+
+        // ================================================================
+        // 2. КОНСТАНТЫ ДЛЯ ОТЧЕТОВ
+        // ================================================================
+
+        const DEPARTMENT_CONSTANTS = {
+            OBO: {
+                toRole: '<@&1374094390099705877>  <@&1321222310799216681>',
+                cc: '<@&1374103013479940117>',
+                reportPrefix: 'К ходатайству прикладываю следующие документы:'
+            },
+            CSN: {
+                toRole: '<@&1374094431581507684>  <@&1321222310799216681>',
+                cc: '<@&1321222323340181595>',
+                reportPrefix: 'К ходатайству прикладываю следующие документы:'
+            },
+            ACADEMY: {
+                toRole: '<@&1374101261124894890>',
+                cc: '<@&1321222314104328212>',
+                reportPrefix: 'К ходатайству прилагаю следующие документы:'
+            },
+            AS: {
+                toRole: '<@&1374101261124894890>',
+                cc: '<@&1321222314104328212>',
+                reportPrefix: 'К ходатайству прикладываю следующие документы:'
+            }
+        };
+
+        // ================================================================
+        // 3. БАЗА ДАННЫХ ЗАПРОСОВ
+        // ================================================================
+
+        const REQUEST_DB = {
+            OBO: {
+                name: 'ОБО СБП',
+                constants: {
+                    to: '<@&1321222323340181595> <@&1374103013479940117>',
+                    cc: '<@&1374094390099705877>'
+                },
+                items: {
+                    lecture: ['вступительная лекция СБП', 'по проведению фин. поставки'],
+                    test: ['по сопровождению'],
+                    exam: ['по задержанию, пользуясь процессуальным кодексом', 'по сопровождению начальству',
+                        'по сдаче всех основных законов начальству СБП ФСО'
+                    ],
+                    training: ['по огневой подготовке', 'по оказанию сопровождения', 'по физической подготовке']
+                }
+            },
+            CSN: {
+                name: 'ЦСН СБП',
+                constants: {
+                    to: '<@&1321222323340181595> <@&1374103013479940117>',
+                    cc: '<@&1374094431581507684>'
+                },
+                items: {
+                    lecture: ['вступительная лекция СБП', 'по проведению фин. поставки'],
+                    test: ['по сопровождению'],
+                    exam: ['по задержанию, пользуясь процессуальным кодексом', 'по сопровождению начальству',
+                        'по сдаче всех основных законов начальству СБП ФСО'
+                    ],
+                    training: ['по огневой подготовке', 'по оказанию сопровождения', 'по физической подготовке']
+                }
+            },
+            AS: {
+                name: 'АС ФСО',
+                constants: {
+                    to: '<@&1374101261124894890>',
+                    cc: '<@&1321222314104328212>'
+                },
+                items: {
+                    lecture: ['лекция о проведении экзаменов для Академии ФСО', 'вступительная лекция для Академии ФСО'],
+                    test: ['тест по знанию внутреннего устава', 'тест по знанию НПА',
+                    'тест по несению службы на постах'],
+                    exam: ['экзамен по принятию практических экзаменов',
+                        'экзамен по проведению вступительной лекции для Академии ФСО',
+                        'экзамен по проведению собеседования в Академию ФСО'
+                    ],
+                    training: ['тренировка с курсантами Академии', 'практический экзамен для курсантов',
+                        'любая тренировка'
+                    ]
+                }
+            },
+            ACADEMY: {
+                name: 'Академия ФСО',
+                constants: {
+                    to: '<@&1374101261124894890>',
+                    cc: '<@&1321222314104328212>'
+                },
+                items: {
+                    lecture: ['вступительная лекция', 'лекция по проведению финансовой поставки',
+                        'лекция по сопровождению охраняемого лица'
+                    ],
+                    test: ['тест на знание внутреннего устава', 'тест на знание НПА',
+                    'тест по несению службы на постах'],
+                    exam: ['экзамен по сопровождению охраняемого лица', 'экзамен по проведению финансовой поставки',
+                        'практический экзамен по передаче задержания'
+                    ],
+                    training: ['тренировка по огневой подготовке', 'тренировка по физической подготовке',
+                        'тренировка по оказанию сопровождения', 'любая тренировка'
+                    ]
+                }
+            }
+        };
+
+        // ================================================================
+        // 4. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ОТЧЕТ НА ПОВЫШЕНИЕ)
+        // ================================================================
+
+        function getDepartmentKeys() {
+            return Object.keys(RANKS_DB);
+        }
+
+        function getDepartmentName(depKey) {
+            return RANKS_DB[depKey]?.displayName || depKey;
+        }
+
+        function getDepartmentShortName(depKey) {
+            return RANKS_DB[depKey]?.name || depKey;
+        }
+
+        function getAllRanks(depKey) {
+            const dep = RANKS_DB[depKey];
+            if (!dep) return [];
+            const set = new Set();
+            dep.paths.forEach(p => {
+                set.add(p.from);
+                set.add(p.to);
+            });
+            return Array.from(set);
+        }
+
+        function getCurrentPath(depKey, from, to) {
+            const dep = RANKS_DB[depKey];
+            if (!dep) return null;
+            return dep.paths.find(p => p.from === from && p.to === to) || null;
+        }
+
+        function getNextRank(depKey, currentRank) {
+            const dep = RANKS_DB[depKey];
+            if (!dep) return null;
+            const path = dep.paths.find(p => p.from === currentRank);
+            if (path) {
+                return path.to;
+            }
+            return null;
+        }
+
+        function getConstantsForDepartment(depKey) {
+            if (DEPARTMENT_CONSTANTS[depKey]) {
+                return DEPARTMENT_CONSTANTS[depKey];
+            }
+            return DEPARTMENT_CONSTANTS.OBO;
+        }
+
+        // ================================================================
+        // 5. ФУНКЦИИ ЗАПРОСОВ
+        // ================================================================
+
+        function updateRequestItems() {
+            const type = document.getElementById('requestType').value;
+            const department = document.getElementById('requestDepartment').value;
+            const select = document.getElementById('requestItem');
+            const deptData = REQUEST_DB[department];
+            if (!deptData) {
+                select.innerHTML = '<option value="">Нет доступных пунктов</option>';
+                return;
+            }
+            const items = deptData.items[type] || [];
+            select.innerHTML = '<option value="">Выберите из списка</option>';
+            const typeLabels = {
+                lecture: 'Лекция',
+                test: 'Тест',
+                exam: 'Экзамен',
+                training: 'Тренировка'
+            };
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = `${typeLabels[type]}: ${item}`;
+                select.appendChild(opt);
+            });
+            if (items.length === 0) select.innerHTML = '<option value="">Нет доступных пунктов</option>';
+        }
+
+        function getRequestConstants(department) {
+            return REQUEST_DB[department]?.constants || null;
+        }
+
+        // ================================================================
+        // 6. ТЕМА
+        // ================================================================
+
+        let currentTheme = 'light';
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('themeToggle');
+            if (currentTheme === 'light') {
+                html.setAttribute('data-theme', 'dark');
+                currentTheme = 'dark';
+                btn.innerHTML = '☀️ <span>Светлая</span>';
+            } else {
+                html.removeAttribute('data-theme');
+                currentTheme = 'light';
+                btn.innerHTML = '🌙 <span>Тёмная</span>';
+            }
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('theme');
+            if (saved === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                currentTheme = 'dark';
+                document.getElementById('themeToggle').innerHTML = '☀️ <span>Светлая</span>';
+            }
+        }
+
+        // ================================================================
+        // 7. TOAST
+        // ================================================================
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // ================================================================
+        // 8. ОСНОВНАЯ ЛОГИКА (ОТЧЕТ НА ПОВЫШЕНИЕ)
+        // ================================================================
+
+        let state = {
+            department: 'OBO',
+            rankFrom: 'Сержант',
+            rankTo: 'Старший Сержант',
+            links: {
+                profile: '',
+                fullName: ''
+            }
+        };
+
+        function populateDepartmentSelect() {
+            const select = document.getElementById('departmentSelect');
+            const keys = getDepartmentKeys();
+            select.innerHTML = '';
+            keys.forEach(key => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = getDepartmentName(key);
+                select.appendChild(opt);
+            });
+            if (keys.includes(state.department)) {
+                select.value = state.department;
+            }
+        }
+
+        function populateRankSelects() {
+            const allRanks = getAllRanks(state.department);
+            const fromSelect = document.getElementById('rankFromSelect');
+            fromSelect.innerHTML = '';
+            allRanks.forEach(rank => {
+                const opt = document.createElement('option');
+                opt.value = rank;
+                opt.textContent = rank;
+                fromSelect.appendChild(opt);
+            });
+            if (allRanks.includes(state.rankFrom)) fromSelect.value = state.rankFrom;
+            else fromSelect.value = allRanks[0] || '';
+            state.rankFrom = fromSelect.value;
+            updateAutoRank();
+            updateRankPreview();
+        }
+
+        function updateAutoRank() {
+            const nextRank = getNextRank(state.department, state.rankFrom);
+            if (nextRank) {
+                state.rankTo = nextRank;
+                document.getElementById('rankToAuto').textContent = nextRank;
+            } else {
+                state.rankTo = state.rankFrom;
+                document.getElementById('rankToAuto').textContent = 'Нет следующего звания';
+            }
+        }
+
+        function updateRankPreview() {
+            const preview = document.getElementById('rankPreview');
+            if (preview) {
+                preview.textContent = state.rankFrom;
+            }
+        }
+
+        function renderRequirements() {
+            const container = document.getElementById('requirementsList');
+            const path = getCurrentPath(state.department, state.rankFrom, state.rankTo);
+            if (!path || path.requirements.length === 0) {
+                container.innerHTML =
+                    `<div class="req-item" style="color: var(--text-muted);">Нет требований для этого перехода</div>`;
+                return;
+            }
+            container.innerHTML = path.requirements.map((req, idx) => `
+                <div class="req-item">
+                    <span class="req-badge">#${idx + 1}</span>
+                    <span class="req-text">${req}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderLinkFields() {
+            const container = document.getElementById('requirementsFields');
+            const path = getCurrentPath(state.department, state.rankFrom, state.rankTo);
+            if (!path || path.requirements.length === 0) {
+                container.innerHTML =
+                    `<div style="color: var(--text-muted); font-size: 14px; padding: 12px 0;">⚠️ Нет требований для выбранного перехода</div>`;
+                return;
+            }
+            let html = '';
+            path.requirements.forEach((req, idx) => {
+                const fieldId = `req_${idx}`;
+                const val = state.links[fieldId] || '';
+                html += `
+                    <div class="form-group">
+                        <div class="requirement-label">
+                            <span class="req-num">${idx + 1}</span>
+                            <span>${req}</span>
+                            <span class="multi-hint">(можно вставить несколько ссылок, каждая с новой строки)</span>
+                        </div>
+                        <textarea class="input-field link-input" id="${fieldId}" 
+                                  placeholder="Вставьте ссылку(и) на подтверждение&#10;Каждая ссылка с новой строки" 
+                                  rows="2">${val}</textarea>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            container.querySelectorAll('.link-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    state.links[this.id] = this.value;
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+                });
+                input.style.height = 'auto';
+                input.style.height = Math.min(input.scrollHeight, 200) + 'px';
+            });
+        }
+
+        function bindProfileField() {
+            const input = document.getElementById('profileLink');
+            if (!input) return;
+            input.value = state.links['profile'] || '';
+            input.addEventListener('input', function() {
+                state.links['profile'] = this.value;
+            });
+        }
+
+        function bindFullNameField() {
+            const input = document.getElementById('fullName');
+            if (!input) return;
+            input.value = state.links['fullName'] || '';
+            input.addEventListener('input', function() {
+                state.links['fullName'] = this.value;
+            });
+        }
+
+        function generateReport() {
+            const path = getCurrentPath(state.department, state.rankFrom, state.rankTo);
+            if (!path) {
+                showToast('❌ Ошибка: путь повышения не найден');
+                return;
+            }
+            const rankFrom = state.rankFrom;
+            const rankTo = state.rankTo;
+            const depName = getDepartmentShortName(state.department);
+            const fullName = state.links['fullName'] || '[ФИО НЕ УКАЗАНО]';
+            const profileLink = state.links['profile'] || '[ССЫЛКА НА ПРОФИЛЬ НЕ УКАЗАНА]';
+            const constants = getConstantsForDepartment(state.department);
+
+            let reqLines = [];
+            path.requirements.forEach((req, idx) => {
+                const rawLinks = state.links[`req_${idx}`] || '';
+                const links = rawLinks.split('\n').filter(link => link.trim() !== '');
+                if (links.length === 0) {
+                    reqLines.push(`${req} — [ССЫЛКА НЕ УКАЗАНА]`);
+                } else if (links.length === 1) {
+                    reqLines.push(`${req} — ${links[0].trim()}`);
+                } else {
+                    const linkLines = links.map(link => `  • ${link.trim()}`).join('\n');
+                    reqLines.push(`${req}:\n${linkLines}`);
+                }
+            });
+            const reqText = reqLines.join('\n');
+
+            let additionalText = '';
+            if (state.department === 'ACADEMY') {
+                additionalText = `, в связи с прохождением ${getCourseNumber(rankFrom)} курса обучения`;
+            }
+            let specialNote = '';
+            if (state.department === 'AS' && rankTo === 'Капитан') {
+                specialNote = '\n\nПримечание: Повышение происходит на усмотрение Начальника АС ФСО.';
+            }
+
+            const report = `
+        Кому: ${constants.toRole}
+        Копия: ${constants.cc}
+        От: ${profileLink}
+
+        Я, ${rankFrom} ${depName} "${fullName}", прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
+        ${constants.reportPrefix}
+        ${reqText}${specialNote}
+            `.trim();
+
+            const output = document.getElementById('reportOutput');
+            const body = document.getElementById('reportBody');
+            body.textContent = report;
+            output.classList.add('active');
+            if (window.innerWidth < 900) {
+                output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            showToast('✅ Отчет сгенерирован');
+        }
+
+        function getCourseNumber(rank) {
+            const courseMap = {
+                'Рядовой': '1',
+                'Ефрейтор': '2',
+                'Младший Сержант': '3',
+                'Сержант': '4'
+            };
+            return courseMap[rank] || '';
+        }
+
+        function copyReport() {
+            const body = document.getElementById('reportBody');
+            const text = body.textContent;
+            if (!text || text.trim() === '') {
+                showToast('⚠️ Сначала сгенерируйте отчет');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Отчет скопирован в буфер обмена');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ Отчет скопирован');
+            });
+        }
+
+        function refreshAll() {
+            populateRankSelects();
+            renderRequirements();
+            renderLinkFields();
+            bindProfileField();
+            bindFullNameField();
+            updateRankPreview();
+            document.getElementById('reportOutput').classList.remove('active');
+        }
+
+        // ================================================================
+        // 9. ОСНОВНАЯ ЛОГИКА (ГЕНЕРАТОР ЗАПРОСА)
+        // ================================================================
+
+        function generateRequest() {
+            const type = document.getElementById('requestType').value;
+            const department = document.getElementById('requestDepartment').value;
+            const rank = document.getElementById('requestRank').value;
+            const name = document.getElementById('requestName').value.trim();
+            const profile = document.getElementById('requestProfile').value.trim();
+            const selectedItem = document.getElementById('requestItem').value;
+            const customItem = document.getElementById('requestCustomItem').value.trim();
+
+            if (!name) { showToast('⚠️ Введите имя и фамилию'); return; }
+            if (!profile) { showToast('⚠️ Введите ссылку на профиль'); return; }
+            let item = selectedItem || customItem;
+            if (!item) { showToast('⚠️ Выберите или введите пункт'); return; }
+            const constants = getRequestConstants(department);
+            if (!constants) { showToast('❌ Ошибка: отдел не найден'); return; }
+
+            const typeLabels = {
+                lecture: 'лекцию',
+                test: 'тест',
+                exam: 'экзамен',
+                training: 'тренировку'
+            };
+
+            const requestText = `
+        Кому: ${constants.to}
+        Копия: ${constants.cc}
+        От: ${profile}
+
+        Я, ${rank} ${name}, прошу провести мне ${typeLabels[type]} ${item}.
+            `.trim();
+
+            const output = document.getElementById('requestOutput');
+            const body = document.getElementById('requestBody');
+            body.textContent = requestText;
+            output.style.display = 'block';
+            if (window.innerWidth < 900) output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast('✅ Запрос сгенерирован');
+        }
+
+        function copyRequest() {
+            const body = document.getElementById('requestBody');
+            const text = body.textContent;
+            if (!text || text.trim() === '') { showToast('⚠️ Сначала сгенерируйте запрос'); return; }
+            navigator.clipboard.writeText(text).then(() => showToast('✅ Запрос скопирован'))
+                .catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast('✅ Запрос скопирован');
+                });
+        }
+
+        function clearRequest() {
+            document.getElementById('requestName').value = '';
+            document.getElementById('requestProfile').value = '';
+            document.getElementById('requestCustomItem').value = '';
+            document.getElementById('requestItem').value = '';
+            document.getElementById('requestOutput').style.display = 'none';
+            showToast('🧹 Форма очищена');
+        }
+
+        // ================================================================
+        // 10. ЗВУКИ (ДЛЯ ГЕНЕРАТОРА ПОСТА)
+        // ================================================================
+
+        function playBeep(frequency, duration, type = 'sine', volume = 0.3) {
+            try {
+                const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.value = volume;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function playStartSound() {
+            playBeep(800, 0.15, 'sine', 0.3);
+            setTimeout(() => playBeep(1200, 0.15, 'sine', 0.3), 150);
+        }
+
+        function playInterimSound() {
+            playBeep(600, 0.2, 'sine', 0.25);
+            setTimeout(() => playBeep(900, 0.15, 'sine', 0.2), 200);
+        }
+
+        function playEndSound() {
+            playBeep(600, 0.4, 'sawtooth', 0.2);
+            setTimeout(() => playBeep(400, 0.3, 'sawtooth', 0.15), 300);
+        }
+
+        function playCopySound() {
+            playBeep(1200, 0.05, 'sine', 0.15);
+        }
+
+        function playErrorSound() {
+            playBeep(300, 0.3, 'sawtooth', 0.2);
+            setTimeout(() => playBeep(250, 0.3, 'sawtooth', 0.15), 250);
+        }
+
+        function playClearSound() {
+            playBeep(500, 0.1, 'sine', 0.15);
+            setTimeout(() => playBeep(400, 0.1, 'sine', 0.12), 100);
+        }
+
+        // ================================================================
+        // 11. ОСНОВНАЯ ЛОГИКА (ГЕНЕРАТОР ПОСТА)
+        // ================================================================
+
+        let postState = {
+            isActive: false,
+            startTime: null,
+            reports: [],
+            timers: [],
+            timerInterval: null,
+            completed: false
+        };
+
+        const statuses = [
+            { code: 'Код 0', class: 'status-0' },
+            { code: 'Код 1', class: 'status-1' },
+            { code: 'Код 2', class: 'status-2' },
+            { code: 'Код 3', class: 'status-3' },
+            { code: 'Код 4', class: 'status-4' }
+        ];
+
+        function getStatusByIndex(index) {
+            return statuses[index] || statuses[0];
+        }
+
+        function formatDateTime(date) {
+            if (!date) return '';
+            const d = String(date.getDate()).padStart(2, '0');
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const y = date.getFullYear();
+            const h = String(date.getHours()).padStart(2, '0');
+            const min = String(date.getMinutes()).padStart(2, '0');
+            return `${d}.${m}.${y} ${h}:${min}`;
+        }
+
+        function formatDuration(startDate, endDate) {
+            let diff = Math.floor((endDate - startDate) / 1000);
+            const hrs = Math.floor(diff / 3600);
+            diff -= hrs * 3600;
+            const mins = Math.floor(diff / 60);
+            const secs = diff - mins * 60;
+            if (hrs > 0) {
+                return `${hrs} ч ${mins} мин ${secs} сек`;
+            }
+            return `${mins} мин ${secs} сек`;
+        }
+
+        function getMoscowTime() {
+            const now = new Date();
+            return new Date(now.getTime() + (3 * 60 * 60 * 1000));
+        }
+
+        function generateStartReport(rank, name, post, sostav, status, time) {
+            return `Докладывает "${rank}" "${name}" | Пост: «${post}» | Состав: ${sostav} | Состояние стабильное | Заступил на пост | Время: ${formatDateTime(time)}.`;
+        }
+
+        function generateInterimReport(rank, name, post, sostav, status, minutes) {
+            return `Докладывает "${rank}" "${name}" | Пост: «${post}» | Состав: ${sostav} | Состояние стабильное | Время на посту: ${minutes} минут | Доклад окончен.`;
+        }
+
+        function generateEndReport(rank, name, post, sostav, status, time) {
+            return `Докладывает "${rank}" "${name}" | Пост: «${post}» | Состав: ${sostav} | Состояние стабильное | Пост сдал | Время: ${formatDateTime(time)}.`;
+        }
+
+        function disableFields(disabled) {
+            ['rankSelect', 'locationSelect', 'sostavSelect', 'durationSelect', 'statusSelect'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.disabled = disabled;
+            });
+            document.getElementById('surnameInput').disabled = disabled;
+        }
+
+        function updateUI(isActive, completed = false) {
+            const badge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const mainBtn = document.getElementById('mainBtn');
+            const postStatusText = document.getElementById('postStatusText');
+
+            if (isActive) {
+                badge.className = 'status-badge active';
+                statusText.textContent = 'На службе';
+                timerDisplay.className = 'timer-display';
+                mainBtn.innerHTML = '📤 СДАТЬ';
+                mainBtn.className = 'btn btn-danger';
+                postStatusText.textContent = 'активен';
+                postStatusText.style.color = 'var(--border-focus)';
+                disableFields(true);
+            } else if (completed) {
+                badge.className = 'status-badge completed';
+                statusText.textContent = 'Завершен';
+                timerDisplay.className = 'timer-display completed';
+                timerDisplay.textContent = '✅ Завершен';
+                mainBtn.innerHTML = '🚀 ЗАСТУПИТЬ';
+                mainBtn.className = 'btn btn-primary';
+                postStatusText.textContent = 'завершен';
+                postStatusText.style.color = 'var(--btn-success-bg)';
+                disableFields(false);
+            } else {
+                badge.className = 'status-badge idle';
+                statusText.textContent = 'Ожидание';
+                timerDisplay.className = 'timer-display inactive';
+                timerDisplay.textContent = '--:--:--';
+                mainBtn.innerHTML = '🚀 ЗАСТУПИТЬ';
+                mainBtn.className = 'btn btn-primary';
+                postStatusText.textContent = 'не активен';
+                postStatusText.style.color = 'var(--text-muted)';
+                disableFields(false);
+            }
+        }
+
+        function getPostFormData() {
+            return {
+                rank: document.getElementById('rankSelect').value,
+                name: document.getElementById('surnameInput').value.trim(),
+                post: document.getElementById('locationSelect').value,
+                sostav: document.getElementById('sostavSelect').value,
+                duration: parseInt(document.getElementById('durationSelect').value),
+                status: getStatusByIndex(parseInt(document.getElementById('statusSelect').value))
+            };
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    playCopySound();
+                    showToast('✅ Скопировано в буфер обмена');
+                }).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                playCopySound();
+                showToast('✅ Скопировано в буфер обмена');
+            } catch (e) {
+                showToast('❌ Ошибка копирования');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function renderReports(reports) {
+            const container = document.getElementById('reportsList');
+
+            if (!reports || reports.length === 0) {
+                container.innerHTML =
+                    `<div style="color: var(--text-muted); text-align: center; padding: 30px 20px; font-size: 14px;">📭 Начните пост, чтобы увидеть отчеты</div>`;
+                return;
+            }
+
+            const typeLabels = {
+                start: { label: 'НАЧАЛО', class: 'start' },
+                interim: { label: 'ПРОМЕЖУТОЧНЫЙ', class: 'interim' },
+                end: { label: 'ЗАВЕРШЕНИЕ', class: 'end' }
+            };
+
+            container.innerHTML = reports.map((report, index) => {
+                const isReady = report.isReady !== false;
+                const isStart = report.type === 'start';
+
+                return `
+                    <div class="report-item ${isReady ? 'ready' : ''}">
+                        <div class="report-top">
+                            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1;min-width:0;">
+                                <span class="report-type ${typeLabels[report.type].class}">${typeLabels[report.type].label}</span>
+                                <span class="report-time">${report.time || ''}</span>
+                                ${!isStart ? `
+                                    <span class="report-status ${isReady ? 'ready-status' : 'waiting-status'}">
+                                        ${isReady ? '✅ Готов' : '⏳ Ожидание...'}
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <div class="report-actions">
+                                ${isReady ? `
+                                    <button class="btn btn-success btn-sm copy-btn" data-index="${index}">
+                                        📋 ${report.copied ? '✓' : 'Копировать'}
+                                    </button>
+                                ` : `
+                                    <span style="font-size: 11px; color: var(--text-muted);">⏳ ${report.timeLeft || ''}</span>
+                                `}
+                            </div>
+                        </div>
+                        <div class="report-text">${report.text}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    const report = postState.reports[idx];
+                    if (report) {
+                        copyToClipboard(report.text);
+                        report.copied = true;
+                        renderReports(postState.reports);
+                    }
+                });
+            });
+        }
+
+        function startDuty() {
+            const data = getPostFormData();
+
+            if (!data.name) {
+                document.getElementById('surnameInput').classList.add('error');
+                document.getElementById('surnameError').textContent = '⚠️ Имя и Фамилия обязательны';
+                playErrorSound();
+                return;
+            }
+            document.getElementById('surnameInput').classList.remove('error');
+            document.getElementById('surnameError').textContent = '';
+
+            if (postState.timers) {
+                postState.timers.forEach(t => clearTimeout(t));
+                postState.timers = [];
+            }
+            if (postState.timerInterval) {
+                clearInterval(postState.timerInterval);
+                postState.timerInterval = null;
+            }
+
+            const now = getMoscowTime();
+            postState.startTime = now;
+            postState.isActive = true;
+            postState.completed = false;
+            postState.reports = [];
+
+            const endTime = new Date(now.getTime() + data.duration * 60 * 1000);
+
+            const r1 = {
+                type: 'start',
+                text: generateStartReport(data.rank, data.name, data.post, data.sostav, data.status, now),
+                time: formatDateTime(now),
+                isReady: true,
+                copied: false
+            };
+            postState.reports.push(r1);
+
+            const interimCount = Math.floor((data.duration - 1) / 15);
+
+            for (let i = 1; i <= interimCount; i++) {
+                const minutes = i * 15;
+                if (minutes >= data.duration) continue;
+
+                const reportTime = new Date(now.getTime() + minutes * 60 * 1000);
+                const text = generateInterimReport(data.rank, data.name, data.post, data.sostav, data.status, minutes);
+                const idx = postState.reports.length;
+
+                postState.reports.push({
+                    type: 'interim',
+                    text: text,
+                    time: formatDateTime(reportTime),
+                    isReady: false,
+                    copied: false,
+                    timeLeft: `${minutes} мин`,
+                    minutes: minutes
+                });
+
+                const delay = minutes * 60 * 1000;
+                const timer = setTimeout(() => {
+                    if (postState.isActive) {
+                        const currentData = getPostFormData();
+                        const elapsed = Math.floor((getMoscowTime() - postState.startTime) / 60000);
+                        const newText = generateInterimReport(
+                            currentData.rank,
+                            currentData.name || data.name,
+                            currentData.post,
+                            currentData.sostav,
+                            currentData.status,
+                            elapsed
+                        );
+                        postState.reports[idx].text = newText;
+                        postState.reports[idx].isReady = true;
+                        postState.reports[idx].time = formatDateTime(getMoscowTime());
+                        renderReports(postState.reports);
+                        playInterimSound();
+                        showToast(`📋 Промежуточный отчет готов! (${elapsed} минут)`);
+                    }
+                }, delay);
+
+                postState.timers.push(timer);
+            }
+
+            const endIdx = postState.reports.length;
+            const endText = generateEndReport(data.rank, data.name, data.post, data.sostav, data.status, endTime);
+            postState.reports.push({
+                type: 'end',
+                text: endText,
+                time: formatDateTime(endTime),
+                isReady: false,
+                copied: false,
+                timeLeft: `${data.duration} мин`
+            });
+
+            const endDelay = data.duration * 60 * 1000;
+            const endTimer = setTimeout(() => {
+                if (postState.isActive) {
+                    const currentData = getPostFormData();
+                    const endTimeNow = getMoscowTime();
+                    const newText = generateEndReport(
+                        currentData.rank,
+                        currentData.name || data.name,
+                        currentData.post,
+                        currentData.sostav,
+                        currentData.status,
+                        endTimeNow
+                    );
+                    postState.reports[endIdx].text = newText;
+                    postState.reports[endIdx].isReady = true;
+                    postState.reports[endIdx].time = formatDateTime(endTimeNow);
+                    postState.completed = true;
+                    postState.isActive = false;
+                    renderReports(postState.reports);
+                    updateUI(false, true);
+                    playEndSound();
+                    showToast('✅ Пост завершен! Итоговый отчет готов.');
+                }
+            }, endDelay);
+
+            postState.timers.push(endTimer);
+
+            postState.timerInterval = setInterval(() => {
+                if (postState.isActive && postState.startTime) {
+                    const elapsed = formatDuration(postState.startTime, getMoscowTime());
+                    document.getElementById('timerDisplay').textContent = elapsed;
+                }
+            }, 1000);
+
+            renderReports(postState.reports);
+            updateUI(true);
+            playStartSound();
+            showToast(`🚀 Заступил на пост в ${formatDateTime(now)}`);
+            console.log(`📋 Всего отчетов: ${postState.reports.length} (1 начало + ${interimCount} промежуточных + 1 завершение)`);
+        }
+
+        function endDuty() {
+            if (!postState.isActive && !postState.completed) return;
+
+            if (postState.timers) {
+                postState.timers.forEach(t => clearTimeout(t));
+                postState.timers = [];
+            }
+            if (postState.timerInterval) {
+                clearInterval(postState.timerInterval);
+                postState.timerInterval = null;
+            }
+
+            const data = getPostFormData();
+            const now = getMoscowTime();
+            const elapsed = postState.startTime ? Math.floor((now - postState.startTime) / 60000) : 0;
+
+            const reports = postState.reports.map((r, idx) => {
+                if (r.type === 'start') {
+                    return {
+                        ...r,
+                        text: generateStartReport(data.rank, data.name || 'Имя', data.post, data.sostav, data
+                            .status,
+                            postState.startTime || now),
+                        time: formatDateTime(postState.startTime || now),
+                        isReady: true
+                    };
+                } else if (r.type === 'interim') {
+                    return {
+                        ...r,
+                        text: generateInterimReport(data.rank, data.name || 'Имя', data.post, data.sostav, data
+                            .status,
+                            elapsed),
+                        time: formatDateTime(now),
+                        isReady: true
+                    };
+                } else if (r.type === 'end') {
+                    return {
+                        ...r,
+                        text: generateEndReport(data.rank, data.name || 'Имя', data.post, data.sostav, data.status,
+                            now),
+                        time: formatDateTime(now),
+                        isReady: true
+                    };
+                }
+                return r;
+            });
+
+            postState.reports = reports;
+            postState.isActive = false;
+            postState.completed = true;
+
+            renderReports(postState.reports);
+            updateUI(false, true);
+            playEndSound();
+            showToast('📤 Служба завершена');
+        }
+
+        function resetAll() {
+            if (postState.timers) {
+                postState.timers.forEach(t => clearTimeout(t));
+                postState.timers = [];
+            }
+            if (postState.timerInterval) {
+                clearInterval(postState.timerInterval);
+                postState.timerInterval = null;
+            }
+
+            postState.isActive = false;
+            postState.startTime = null;
+            postState.reports = [];
+            postState.completed = false;
+
+            document.getElementById('surnameInput').value = '';
+            document.getElementById('surnameInput').classList.remove('error');
+            document.getElementById('surnameError').textContent = '';
+
+            renderReports([]);
+            updateUI(false);
+            playClearSound();
+            showToast('🧹 Очищено');
+        }
+
+        // ================================================================
+        // 12. УПРАВЛЕНИЕ КАРТИНКОЙ
+        // ================================================================
+
+        function loadMapImage(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('mapImage');
+                const placeholder = document.getElementById('mapPlaceholder');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+                localStorage.setItem('postMapImage', e.target.result);
+                showToast('✅ Схема загружена');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeMapImage() {
+            const img = document.getElementById('mapImage');
+            const placeholder = document.getElementById('mapPlaceholder');
+            img.style.display = 'none';
+            img.src = '';
+            placeholder.style.display = 'flex';
+            localStorage.removeItem('postMapImage');
+            showToast('🗑️ Схема удалена');
+        }
+
+        function loadSavedMap() {
+            const saved = localStorage.getItem('postMapImage');
+            if (saved) {
+                const img = document.getElementById('mapImage');
+                const placeholder = document.getElementById('mapPlaceholder');
+                img.src = saved;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                const img = document.getElementById('mapImage');
+                const placeholder = document.getElementById('mapPlaceholder');
+                img.src = 'map.png';
+                img.onload = function() {
+                    img.style.display = 'block';
+                    placeholder.style.display = 'none';
+                };
+                img.onerror = function() {
+                    img.style.display = 'none';
+                    placeholder.style.display = 'flex';
+                };
+            }
+        }
+
+        // ================================================================
+        // 13. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // ================================================================
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            if (tabId === 'request' && typeof updateRequestItems === 'function') {
+                updateRequestItems();
+            }
+        }
+
+        // ================================================================
+        // 14. ИНИЦИАЛИЗАЦИЯ
+        // ================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTheme();
+
+            // ---- Отчет на повышение ----
+            populateDepartmentSelect();
+            const deptSelect = document.getElementById('departmentSelect');
+            state.department = deptSelect.value;
+            refreshAll();
+
+            deptSelect.addEventListener('change', function() {
+                state.department = this.value;
+                state.links = { profile: state.links.profile || '', fullName: state.links.fullName || '' };
+                refreshAll();
+            });
+
+            document.getElementById('rankFromSelect').addEventListener('change', function() {
+                state.rankFrom = this.value;
+                const keepLinks = {
+                    profile: state.links.profile || '',
+                    fullName: state.links.fullName || ''
+                };
+                state.links = keepLinks;
+                refreshAll();
+            });
+
+            document.getElementById('generateBtn').addEventListener('click', generateReport);
+            document.getElementById('copyReportBtn').addEventListener('click', copyReport);
+
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                state.links = { profile: '', fullName: '' };
+                refreshAll();
+                document.getElementById('reportOutput').classList.remove('active');
+                showToast('🧹 Все поля очищены');
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    const activeTab = document.querySelector('.tab-content.active');
+                    if (activeTab && activeTab.id === 'tab-report') {
+                        e.preventDefault();
+                        generateReport();
+                    }
+                }
+            });
+
+            // ---- Генератор поста ----
+            loadSavedMap();
+
+            document.getElementById('loadMapBtn').addEventListener('click', function() {
+                document.getElementById('mapFileInput').click();
+            });
+
+            document.getElementById('mapFileInput').addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    loadMapImage(this.files[0]);
+                }
+                this.value = '';
+            });
+
+            document.getElementById('removeMapBtn').addEventListener('click', removeMapImage);
+
+            document.getElementById('mainBtn').addEventListener('click', function() {
+                if (postState.isActive) {
+                    endDuty();
+                } else if (postState.completed) {
+                    resetAll();
+                    setTimeout(() => startDuty(), 100);
+                } else {
+                    startDuty();
+                }
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                if (postState.isActive) {
+                    if (!confirm('Пост активен. Завершить и очистить?')) return;
+                    endDuty();
+                    setTimeout(() => resetAll(), 300);
+                } else {
+                    resetAll();
+                }
+            });
+
+            document.getElementById('clearReportsBtn').addEventListener('click', function() {
+                if (postState.isActive) {
+                    if (!confirm('Пост активен. Очистить отчеты?')) return;
+                    endDuty();
+                    setTimeout(() => resetAll(), 300);
+                    return;
+                }
+                postState.reports = [];
+                renderReports([]);
+                showToast('🧹 Отчеты очищены');
+            });
+
+            document.getElementById('copyAllBtn').addEventListener('click', function() {
+                const readyReports = postState.reports.filter(r => r.isReady);
+                if (readyReports.length === 0) {
+                    showToast('⚠️ Нет готовых отчетов');
+                    return;
+                }
+                const text = readyReports.map(r => r.text).join('\n\n');
+                copyToClipboard(text);
+            });
+
+            document.getElementById('surnameInput').addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('error');
+                    document.getElementById('surnameError').textContent = '';
+                }
+            });
+
+            updateUI(false);
+            renderReports([]);
+
+            // ---- Генератор запроса ----
+            document.getElementById('generateRequestBtn').addEventListener('click', generateRequest);
+            document.getElementById('copyRequestBtn').addEventListener('click', copyRequest);
+            document.getElementById('clearRequestBtn').addEventListener('click', clearRequest);
+            document.getElementById('requestType').addEventListener('change', updateRequestItems);
+            document.getElementById('requestDepartment').addEventListener('change', updateRequestItems);
+            document.getElementById('requestItem').addEventListener('change', function() {
+                if (this.value) document.getElementById('requestCustomItem').value = '';
+            });
+            document.getElementById('requestCustomItem').addEventListener('input', function() {
+                if (this.value) document.getElementById('requestItem').value = '';
+            });
+            updateRequestItems();
+
+            // ---- Переключение вкладок ----
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+
+            // ---- Тема ----
+            document.getElementById('themeToggle').addEventListener('click', function() {
+                toggleTheme();
+            });
+
+            console.log('🚀 СБП ФСО Генератор отчетов загружен');
+            console.log('💡 Нажмите Ctrl+Enter для быстрой генерации отчета');
+        });
+    </script>
+
 </body>
 </html>
