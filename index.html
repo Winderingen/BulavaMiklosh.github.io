@@ -1183,6 +1183,11 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="profileLink">🔗 Ссылка на профиль</label>
+                        <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
+                    </div>
+
                     <div id="requirementsFields">
                         <div style="color: var(--text-muted); font-size: 14px; padding: 12px 0;">
                             Выберите звание, чтобы увидеть поля
@@ -2133,6 +2138,7 @@
             const report = `
         Кому: ${constants.toRole}
         Копия: ${constants.cc}
+        От: ${profileLink}
 
         Я, ${rankFrom} ${depName} ${fullName}, прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
         ${constants.reportPrefix}
