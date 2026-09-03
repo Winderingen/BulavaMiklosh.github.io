@@ -1115,9 +1115,12 @@
         <div class="header">
             <div class="header-left">
                 <h1>
-                    📋 СБП ФСО
+                    📋 Управление ФСО АФО
                     <small>Генератор отчетов</small>
                 </h1>
+                <h2>
+                    <small>Created by Miklosh Bulava</small>
+                </h2>
             </div>
             <div class="header-controls">
                 <button class="theme-toggle" id="themeToggle">
@@ -1178,11 +1181,6 @@
                         <div style="margin-top: 4px; font-size: 13px; color: var(--text-muted);">
                             Будет автоматически подставлено в текст: <strong id="rankPreview">Сержант</strong>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="profileLink">🔗 Ссылка на профиль</label>
-                        <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
                     </div>
 
                     <div id="requirementsFields">
@@ -2132,7 +2130,6 @@
             const report = `
         Кому: ${constants.toRole}
         Копия: ${constants.cc}
-        От: ${profileLink}
 
         Я, ${rankFrom} ${depName} ${fullName}, прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
         ${constants.reportPrefix}
@@ -2351,7 +2348,7 @@
 
         function getMoscowTime() {
             const now = new Date();
-            return new Date(now.getTime() + (3 * 60 * 60 * 1000));
+            return new Date(now.getTime());
         }
 
         function generateStartReport(rank, name, post, sostav, status, time) {
