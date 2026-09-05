@@ -1134,7 +1134,7 @@
         <div class="tabs">
             <button class="tab-btn active" data-tab="report">📄 Отчет на повышение</button>
             <button class="tab-btn" data-tab="post">🚧 Генератор поста</button>
-            <button class="tab-btn" data-tab="request">📝 Запрос</button>
+            <button class="tab-btn" data-tab="request">📝 Запрос (На доработке)</button>
         </div>
 
         <!-- ============================================================ -->
@@ -1186,6 +1186,11 @@
                     <div class="form-group">
                         <label for="profileLink">🔗 Ссылка на профиль</label>
                         <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
+                        <div style="margin-top: 4px; font-size: 13px; color: var(--text-muted);">
+                            Для Академии - <strong>не нужно</strong>
+                            <br>
+                            для АC - <strong>номер удостоверения (статик)</strong>
+                        </div>
                     </div>
 
                     <div id="requirementsFields">
@@ -1968,9 +1973,9 @@
         // ================================================================
 
         let state = {
-            department: 'OBO',
-            rankFrom: 'Сержант',
-            rankTo: 'Старший Сержант',
+            department: 'ACADEMY',
+            rankFrom: 'Рядовой',
+            rankTo: '',
             links: {
                 profile: '',
                 fullName: ''
@@ -2108,7 +2113,15 @@
             const rankTo = state.rankTo;
             const depName = getDepartmentShortName(state.department);
             const fullName = state.links['fullName'] || '[ФИО НЕ УКАЗАНО]';
-            const profileLink = state.links['profile'] || '[ССЫЛКА НА ПРОФИЛЬ НЕ УКАЗАНА]';
+
+            let profileLink = '';
+            if (state.department === 'AS') {
+                  profileLink = state.links['profile'] || '[НОМЕР УДОСТОВЕРЕНИЯ НЕ УКАЗАН]';
+                }
+            else {
+                profileLink = state.links['profile'] || '[ССЫЛКА НА ПРОФИЛЬ НЕ УКАЗАНА]';
+            }
+                    
             const constants = getConstantsForDepartment(state.department);
 
             let reqLines = [];
@@ -2130,20 +2143,42 @@
             if (state.department === 'ACADEMY') {
                 additionalText = `, в связи с прохождением ${getCourseNumber(rankFrom)} курса обучения`;
             }
-            let specialNote = '';
-            if (state.department === 'AS' && rankTo === 'Капитан') {
-                specialNote = '\n\nПримечание: Повышение происходит на усмотрение Начальника АС ФСО.';
+
+            let report = '';
+            if (state.department === 'ACADEMY') {
+                report = `
+Кому: ${constants.toRole}
+Копия: ${constants.cc}
+
+    Я, ${rankFrom} ${depName}, ${fullName}, прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
+${constants.reportPrefix}
+${reqText}
+                    `.trim();
             }
 
-            const report = `
-        Кому: ${constants.toRole}
-        Копия: ${constants.cc}
-        От: ${profileLink}
+            else if (state.department === 'AS' ) {
+                report = `
+Кому: ${constants.toRole}
+Копия: ${constants.cc}
 
-        Я, ${rankFrom} ${depName} ${fullName}, прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
-        ${constants.reportPrefix}
-        ${reqText}${specialNote}
-            `.trim();
+    Я, ${rankFrom} ${depName}, ${fullName} ${profileLink}, прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
+${constants.reportPrefix}
+${reqText}
+                    `.trim();
+            }
+
+            else {
+                report = `
+Кому: ${constants.toRole}
+Копия: ${constants.cc}
+От: ${profileLink}
+
+    Я, ${rankFrom} ${depName}, ${fullName}, прошу рассмотреть мое ходатайство на присвоение мне очередного воинского звания ${rankTo}${additionalText}.
+${constants.reportPrefix}
+${reqText}
+                    `.trim();
+            }
+                
 
             const output = document.getElementById('reportOutput');
             const body = document.getElementById('reportBody');
@@ -2340,7 +2375,7 @@
             const y = date.getFullYear();
             const h = String(date.getHours()).padStart(2, '0');
             const min = String(date.getMinutes()).padStart(2, '0');
-            return `${d}.${m}.${y} ${h}:${min}`;
+            return `${h}:${min}`;
         }
 
         function formatDuration(startDate, endDate) {
