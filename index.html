@@ -1129,7 +1129,7 @@
                 <button class="theme-toggle" id="themeToggle">
                     🌙 <span>Тёмная</span>
                 </button>
-                <small> Version 0.39pb <br> (public beta) </small>
+                <small> Version 0.41pb <br> (public beta) </small>
             </div>
         </div>
         <div class="sub">Автоматическое формирование служебных документов</div>
@@ -1191,9 +1191,7 @@
                         <label for="profileLink">🔗 Ссылка на профиль</label>
                         <input class="input-field" id="profileLink" type="text" placeholder="https://example.com/profile/your_id" />
                         <div style="margin-top: 4px; font-size: 13px; color: var(--text-muted);">
-                            Для Академии - <strong>не нужно</strong>
-                            <br>
-                            для АC/КМК - <strong>номер удостоверения (статик)</strong>
+                            для Академии/АC/КМК - <strong>номер удостоверения (статик)</strong>
                         </div>
                     </div>
 
@@ -2262,7 +2260,7 @@
 Кому: ${constants.toRole}
 Копия: ${constants.cc}
 
-    Я, ${rankFrom} ${depName}, ${fullName}, прошу рассмотреть мое ходатайство на присвоение мне очередного звания ${rankTo}${additionalText}.
+    Я, ${rankFrom} ${depName}, ${fullName}, с номером паспорта ${profileLink} прошу рассмотреть мое ходатайство на присвоение мне очередного звания ${rankTo}${additionalText}.
 ${constants.reportPrefix}
 ${reqText}
                     `.trim();
